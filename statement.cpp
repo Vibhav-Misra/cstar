@@ -1164,6 +1164,14 @@ namespace Cstar
                         EMIT1(24, SLENG);
                         EMIT1(28, INUM);
                         INSYMBOL();
+                    } else if (SY == COUTSY)
+                    {
+                        INSYMBOL();
+                        if (SY == PERIOD) {
+                            COUTMETHODS(bl);
+                        } else {
+                            ERROR(128);
+                        }
                     } else
                     {
                         su = bl->FSYS;
