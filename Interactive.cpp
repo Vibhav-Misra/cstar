@@ -1,5 +1,8 @@
 #include "Interactive.h"
-Interactive *Interactive::singleton = nullptr;
+#include <iostream>
+#include <string>
+#include <vector>
+// Interactive *Interactive::singleton = nullptr;
 Interactive *Interactive::getInstance()
 {
     if (nullptr == singleton)
