@@ -14,5 +14,9 @@ int main() {
 
         std::cout << "Interpreter received: " << cmd << "\n";
     }
+
+    delete iact;
+
     return 0;
 }
+

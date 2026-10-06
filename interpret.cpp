@@ -1058,39 +1058,21 @@ void showRealList(bool flg)
     static void FREADLINE()
     {
         LL = 0;
-        // ... New CLI Routing ...
-        if (IS_TERMINAL) {
-            Interactive *iact = Interactive::getInstance();
-            std::string cmd = iact->getCommand();
-            for (char c : cmd) {
-                if (LL < LLNG) {
-                    LL++;
-                    LINE[LL] = c;
-                }
-            }
-        }
-        // ...
-        else {
-            // ... Legacy Code ...
-            while (!eoln(STDIN) && (LL <= LLNG))
+        while (!eoln(STDIN) && (LL <= LLNG))
+        {
+            CH = (char)fgetc(STDIN);
+            if (CH == '\x08')
             {
-                //CH = (*INP).get();
-                CH = (char)fgetc(STDIN);
-                if (CH == '\x08')
+                if (LL > 0)
                 {
-                    if (LL > 0)
-                    {
-                        LL = LL - 1;
-                    }
-                } else
-                {
-                    LL = LL + 1;
-                    LINE[LL] = CH;
+                    LL = LL - 1;
                 }
+            } else
+            {
+                LL = LL + 1;
+                LINE[LL] = CH;
             }
-
         }
-        //READLN(STDIN);
         if (LL > 0)
         {
             ENDFLAG = false;
@@ -1106,16 +1088,38 @@ void showRealList(bool flg)
 
     void Freadline(PreBuffer *pbp)
     {
-        int ch = 0;
         LL = 0;
-        ch = pbp->getc();
-        while (ch >= 0 && ch != '\n' && ch != '\r')
+
+        // --- NEW CLI ROUTING ---
+        if (pbp->bl == pbp->bh && IS_TERMINAL)
         {
-            LINE[++LL] = (char)ch;
-            ch = pbp->getc();
+            Interactive *iact = Interactive::getInstance();
+            std::string cmd = iact->getCommand();
+
+            for (char c : cmd)
+            {
+                if (LL < LLNG)
+                {
+                    LL++;
+                    LINE[LL] = c;
+                }
+            }
         }
-        if (ch == '\r')
+        else
+        {
+            // --- Legacy Code ---
+            int ch = 0;
             ch = pbp->getc();
+            while (ch >= 0 && ch != '\n' && ch != '\r')
+            {
+                LINE[++LL] = (char)ch;
+                ch = pbp->getc();
+            }
+            if (ch == '\r')
+                ch = pbp->getc();
+        }
+
+        // --- STANDARD CSTAR LINE SETUP ---
         if (LL > 0)
         {
             ENDFLAG = false;
@@ -1129,6 +1133,8 @@ void showRealList(bool flg)
             CC = 0;
         }
     }
+
+
     void NEXTCHAR()
     {
         if (CC == LL)
