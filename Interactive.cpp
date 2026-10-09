@@ -29,6 +29,7 @@ Interactive::Interactive()
     sav = raw;
     tio_sv = true;
     ::cfmakeraw(&raw);
+    raw.c_oflag |= (OPOST | ONLCR);
     ::tcsetattr(STDIN_FILENO, TCSANOW, &raw);
 }
 Interactive::~Interactive()
