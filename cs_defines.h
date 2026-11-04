@@ -25,7 +25,8 @@
 #define OLDALNG 10 
 #define MESSAGELNG 25 
 #define LLNG 121 
-#define KMAX 9 
+// #define KMAX 9
+#define KMAX 10
 #define EMAX 127 
 #define EMIN -127 
 #define LMAX 15 
@@ -33,8 +34,10 @@
 #define SMAX 1500 
 #define ERMAX 158 
 #define OMAX 116 
-#define XMAX 32767 
-#define NMAX 32765 
+// #define XMAX 32767
+// #define NMAX 32765
+#define XMAX 2147483647
+#define NMAX 2147483647
 #define LONGNMAX 2000000000 
 #define WMAX 1 
 #define RTAG 32766 
