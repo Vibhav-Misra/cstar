@@ -413,86 +413,197 @@ namespace Cstar
             ADJUSTSCALE(nl);
     }
 
-    void ESCAPECHAR()
-    {
-        switch (CH)
-        {
-            case 'a':
-                CH = 7;
-                break;
-            case 'b':
-                CH = 8;
-                break;
-            case 'f':
-                CH = 12;
-                break;
-            case 'n':
-                CH = 10;
-                break;
-            case 'r':
-                CH = 13;
-                break;
-            case 't':
-                CH = 9;
-                break;
-            case 'v':
-                CH = 11;
-                break;
-            case '\\':
-            case '?':
-            case '\'':
-            case '"':
-                break;
-            default:
-                ERROR(132);
-                break;
-        }
-    }
-
     static bool isoctal(char ch)
+
     {
+
         return ch >= '0' && ch <= '7';
+
     }
 
-    void ESCAPECHAR2()
+    char ESCAPECHAR()
     {
-        NEXTCH();
+        char result;
         if (isoctal(CH))
         {
-            INUM = 0;
+            int val = 0;
             while (isoctal(CH))
             {
-                INUM = INUM * 8 + (CH - '0');
+                val = val * 8 + (CH - '0');
                 NEXTCH();
             }
-            if (INUM < 128)
-            {
-                STAB[SX] = (char) INUM;
-                SX += 1;
-                if (CH == '\'')
-                    NEXTCH();
-                else
-                    ERROR(130);
-            } else
-            {
-                ERROR(24);
-                if (CH == '\'')
-                    NEXTCH();
-            }
-        } else
-        {
-            ESCAPECHAR();
-            STAB[SX] = CH;
-            INUM = CH;
-            SX += 1;
-            NEXTCH();
-            if (CH == '\'')
-                NEXTCH();
-            else
-                ERROR(130);
+            if (val >= 128) ERROR(24);
+            result = (char)val;
         }
+        else
+        {
+            switch (CH)
+            {
+                case 'a': result = 7; break;
+                case 'b': result = 8; break;
+                case 'f': result = 12; break;
+                case 'n': result = 10; break;
+                case 'r': result = 13; break;
+                case 't': result = 9; break;
+                case 'v': result = 11; break;
+                case '\\': case '?': case '\'': case '"': result = CH; break;
+                default: ERROR(132); result = CH; break;
+            }
+            NEXTCH(); // Always advance past the escape character
+        }
+        return result;
+    }
+
+
+
+    /*
+    void ESCAPECHAR()
+
+    {
+
+        switch (CH)
+
+        {
+
+            case 'a':
+
+                CH = 7;
+
+                break;
+
+            case 'b':
+
+                CH = 8;
+
+                break;
+
+            case 'f':
+
+                CH = 12;
+
+                break;
+
+            case 'n':
+
+                CH = 10;
+
+                break;
+
+            case 'r':
+
+                CH = 13;
+
+                break;
+
+            case 't':
+
+                CH = 9;
+
+                break;
+
+            case 'v':
+
+                CH = 11;
+
+                break;
+
+            case '\\':
+
+            case '?':
+
+            case '\'':
+
+            case '"':
+
+                break;
+
+            default:
+
+                ERROR(132);
+
+                break;
+
+        }
+
+    }
+    */
+
+
+    /*
+    void ESCAPECHAR2() {
+        NEXTCH();
+
+        if (isoctal(CH))
+
+        {
+
+            INUM = 0;
+
+            while (isoctal(CH))
+
+            {
+
+                INUM = INUM * 8 + (CH - '0');
+
+                NEXTCH();
+
+            }
+
+            if (INUM < 128)
+
+            {
+
+                STAB[SX] = (char) INUM;
+
+                SX += 1;
+
+                if (CH == '\'')
+
+                    NEXTCH();
+
+                else
+
+                    ERROR(130);
+
+            } else
+
+            {
+
+                ERROR(24);
+
+                if (CH == '\'')
+
+                    NEXTCH();
+
+            }
+
+        } else
+
+        {
+
+            ESCAPECHAR();
+
+            STAB[SX] = CH;
+
+            INUM = CH;
+
+            SX += 1;
+
+            NEXTCH();
+
+            if (CH == '\'')
+
+                NEXTCH();
+
+            else
+
+                ERROR(130);
+
+        }
+
         SY = CHARCON;
     }
+    */
 
     void INSYMBOL()
     {
@@ -808,8 +919,7 @@ namespace Cstar
             {
                 SY = PERIOD;
             }
-        } else if (CH == '\'')
-        {
+        } else if (CH == '\'') {
             NEXTCH();
             if (CH == '\'')
             {
@@ -824,24 +934,114 @@ namespace Cstar
                 }
                 if (CH == '\\')
                 {
-                    ESCAPECHAR2();
+                    NEXTCH();
+                    STAB[SX] = ESCAPECHAR();
                 } else
                 {
                     STAB[SX] = CH;
-                    SY = CHARCON;
-                    INUM = (unsigned char)STAB[SX];
-                    SX++;
                     NEXTCH();
-                    if (CH == '\'')
-                    {
-                        NEXTCH();
-                    } else
-                    {
-                        ERROR(130);
-                    }
+                }
+
+                SY = CHARCON;
+                INUM = (unsigned char)STAB[SX];
+                SX++;
+
+                if (CH == '\'')
+                {
+                    NEXTCH();
+                } else
+                {
+                    ERROR(130);
                 }
             }
-        } else if (CH == '"')
+        }
+            /*
+            else if (CH == '\'')
+            {
+                NEXTCH();
+                if (CH == '\'')
+                {
+                    ERROR(38);
+                    SY = CHARCON;
+                    INUM = 0;
+                } else
+                {
+                    if (SX + 1 == SMAX)
+                    {
+                        FATAL(3);
+                    }
+                    if (CH == '\\')
+                    {
+                        ESCAPECHAR2();
+                    } else
+                    {
+                        STAB[SX] = CH;
+                        SY = CHARCON;
+                        INUM = (unsigned char)STAB[SX];
+                        SX++;
+                        NEXTCH();
+                        if (CH == '\'')
+                        {
+                            NEXTCH();
+                        } else
+                        {
+                            ERROR(130);
+                        }
+                    }
+                }
+            */
+
+        else if (CH == '"') {
+            nl.K = 0;
+            NEXTCH(); // Read first character inside the string
+            label4:
+            if (CH == '"')
+            {
+                NEXTCH();
+                if (CH != '"')
+                {
+                    goto label5;
+                }
+            }
+            if (SX + nl.K == SMAX)
+            {
+                FATAL(3);
+            }
+            if (CH == '\\')
+            {
+                NEXTCH();
+                STAB[SX + nl.K] = ESCAPECHAR();
+            } else
+            {
+                STAB[SX + nl.K] = CH;
+                NEXTCH();
+            }
+            nl.K++;
+            if (CC == 1)
+            {
+                nl.K = 0;
+            } else
+            {
+                goto label4;
+            }
+
+            label5:
+            if (nl.K == 0)
+            {
+                ERROR(38);
+                SY = CHARCON;
+                INUM = 0;
+            } else
+            {
+                SY = STRNG;
+                INUM = SX;
+                SLENG = nl.K;
+                SX += nl.K;
+            }
+        }
+
+        /*
+        else if (CH == '"')
         {
             nl.K = 0;
             label4:
@@ -885,7 +1085,10 @@ namespace Cstar
                 SLENG = nl.K;
                 SX += nl.K;
             }
-        } else if (CH == '/')
+        }
+        */
+
+        else if (CH == '/')
         {
             NEXTCH();
             if (CH == '*')
