@@ -182,7 +182,7 @@ namespace Cstar
                     }
                     break;
                 case ARRAYS:
-                    ARRAY_COMPATIBLE(V, W);
+                    rtn = ARRAY_COMPATIBLE(V, W);
                     break;
                 default:
                     break;
@@ -1588,19 +1588,23 @@ void VARIABLEDECLARATION(BlockLocal *bl) {
 
         do
         {
-
             // --- STREAM FIX ---
             if (IS_STREAM_LIST) {
                 ENTERCHANNEL();
-                CTAB[C].ELTYP = OTP;
-                CTAB[C].ELREF = ORF;
-                CTAB[C].ELSIZE = OSZ;
+                if (OTP == CHANS) {
+                    CTAB[C].ELTYP = CTAB[ORF].ELTYP;
+                    CTAB[C].ELREF = CTAB[ORF].ELREF;
+                    CTAB[C].ELSIZE = CTAB[ORF].ELSIZE;
+                } else {
+                    CTAB[C].ELTYP = OTP;
+                    CTAB[C].ELREF = ORF;
+                    CTAB[C].ELSIZE = OSZ;
+                }
                 SZ = 1;
                 RF = C;
                 TP = CHANS;
             }
             // ---
-
             C_PNTCHANTYP(bl, TP, RF, SZ);
             if (SY != IDENT)
             {
@@ -1640,7 +1644,8 @@ void VARIABLEDECLARATION(BlockLocal *bl) {
                 }
 
                 T0 = T0 + 1;
-                TAB[T0].TYP = TP;
+                TAB[T0].TYP = IS_STREAM_LIST ? CHANS : TP;
+                //TAB[T0].TYP = TP;
                 TAB[T0].REF = RF;
                 TAB[T0].LEV = bl->LEVEL;
                 TAB[T0].ADR = bl->DX;
