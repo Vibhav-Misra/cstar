@@ -40,7 +40,8 @@
 #define NMAX 2147483647
 #define LONGNMAX 2000000000 
 #define WMAX 1 
-#define RTAG 32766 
+// #define RTAG 32766
+#define RTAG 2147483646
 #define LINELENG 132 
 #define LINELIMIT 30000 
 #define PIDMAX 1000000 
