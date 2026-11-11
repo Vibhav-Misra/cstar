@@ -26,7 +26,7 @@ namespace Cstar
                                        "callblk",
                                        "swap", // 20
                                        "pushaelstkloc",
-                                       "pushpid",
+                                       "pushvalue",
                                        "cpystk[T]>[T-1]",
                                        "pushimm",
                                        "", "cnvi2r", "cin",
@@ -227,6 +227,7 @@ namespace Cstar
         {
             case 0:
             case 1:
+            case 73:
                 snprintf(ibuf, sizeof ibuf, "%4d: %3d %d,%d %s %s\n", ix,
                          F, X, Y, op, lookupSym(ix, X, Y));
                 break;
