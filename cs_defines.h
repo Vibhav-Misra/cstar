@@ -37,7 +37,7 @@
 // #define XMAX 32767
 // #define NMAX 32765
 #define XMAX 2147483647
-#define NMAX 2147483647
+#define NMAX 2147483645
 #define LONGNMAX 2000000000 
 #define WMAX 1 
 // #define RTAG 32766
