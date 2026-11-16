@@ -1548,8 +1548,32 @@ void VARIABLEDECLARATION(BlockLocal *bl) {
     FUNCDEC = false;
     if (!(TP == RECS && SY == SEMICOLON) && !PROCDEFN)
     {
+        // --- STREAM FIX ---
+        bool IS_STREAM_LIST = false;
+        if (SY == CHANSY) {
+            IS_STREAM_LIST = true;
+            INSYMBOL();
+        }
+        // ---
         do
         {
+            // --- STREAM FIX (Part 2: Handle typedef unwrapping) ---
+            if (IS_STREAM_LIST) {
+                ENTERCHANNEL();
+                if (OTP == CHANS) {
+                    CTAB[C].ELTYP = CTAB[ORF].ELTYP;
+                    CTAB[C].ELREF = CTAB[ORF].ELREF;
+                    CTAB[C].ELSIZE = CTAB[ORF].ELSIZE;
+                } else {
+                    CTAB[C].ELTYP = OTP;
+                    CTAB[C].ELREF = ORF;
+                    CTAB[C].ELSIZE = OSZ;
+                }
+                SZ = 1;
+                RF = C;
+                TP = CHANS;
+            }
+            // ---
             C_PNTCHANTYP(bl, TP, RF, SZ);
             if (SY != IDENT)
             {
