@@ -8,6 +8,7 @@
 #include "ProcessDescriptor.h"
 namespace Cstar
 {
+    extern int GETLNUM(int);
     const char *lookupSym(int, int);
     void lookupSymx();
     const char *arrayName(int);
@@ -542,7 +543,8 @@ namespace Cstar
         do
         {
             pd = act->PDES;
-            snapPDES(il, pd);
+            //snapPDES(il, pd);
+            std::cout << "*** DEADLOCK AT " << GETLNUM(pd->PC - 1) << " IN PROCESS " << pd->PID << std::endl;
             act = act->NEXT;
         }
         while (act != nullptr && act != acphead);
